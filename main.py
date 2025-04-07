@@ -34,7 +34,7 @@ def to_calendar(dosya: str) -> dict:
                 days[
                     datetime.datetime.fromtimestamp(
                         int(clean_obj[x][y]) / 1000
-                    ).strftime("%d/%m/%Y")
+                    ).strftime("%d.%m.%Y")
                 ] = []
                 y1 = y + 1
                 try:
@@ -44,7 +44,7 @@ def to_calendar(dosya: str) -> dict:
                         days[
                             datetime.datetime.fromtimestamp(
                                 int(clean_obj[x][y]) / 1000
-                            ).strftime("%d/%m/%Y")
+                            ).strftime("%d.%m.%Y")
                         ].append(clean_obj[x][y1])
                         y1 = y1 + 1
                 except KeyError:
@@ -115,41 +115,41 @@ app = FastAPI()
 @app.get("/")
 @app.get("/bugun")
 def read_today():
-    today = datetime.datetime.now().strftime("%d/%m")
+    today = datetime.datetime.now().strftime("%d.%m")
     return {"sabah": calendar_sabah[today], "aksam": calendar_aksam[today]}
 
 
 @app.get("/yarin")
 def read_tomorrow():
-    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d/%m")
+    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d.%m")
     return {"sabah": calendar_sabah[tomorrow], "aksam": calendar_aksam[tomorrow]}
 
 
 @app.get("/bugun/sabah")
 def read_today_sabah():
-    today = datetime.datetime.now().strftime("%d/%m")
+    today = datetime.datetime.now().strftime("%d.%m")
     return {"sabah": calendar_sabah[today]}
 
 
 @app.get("/bugun/aksam")
 def read_today_aksam():
-    today = datetime.datetime.now().strftime("%d/%m")
+    today = datetime.datetime.now().strftime("%d.%m")
     return {"aksam": calendar_aksam[today]}
 
 
 @app.get("/yarin/sabah")
 def read_tomorrow_sabah():
-    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d/%m")
+    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d.%m")
     return {"sabah": calendar_sabah[tomorrow]}
 
 
 @app.get("/yarin/aksam")
 def read_tomorrow_aksam():
-    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d/%m")
+    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d.%m")
     return {"aksam": calendar_aksam[tomorrow]}
 
 
-@app.get("/day/{day}")
+@app.get("/gun/{day}")
 def read_day(day: str):
     try:
         return {
