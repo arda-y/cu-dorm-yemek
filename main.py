@@ -143,4 +143,4 @@ def read_day(day: str):
         return {"error": "Day not found"}
 
 
-uvicorn.run(host="0.0.0.0", port=8000, app=app)
+uvicorn.run(host="0.0.0.0", port=2000, app=app)
