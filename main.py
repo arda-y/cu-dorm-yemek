@@ -110,7 +110,6 @@ if False:
         print(key, calendar[key])
         print("-------------")
 
-print(calendar["08/04"])
 
 import uvicorn
 from fastapi import FastAPI
@@ -142,5 +141,5 @@ def read_day(day: str):
     except KeyError:
         return {"error": "Day not found"}
 
-
-uvicorn.run(host="0.0.0.0", port=2000, app=app)
+if __name__ == "__main__":
+    uvicorn.run(host="0.0.0.0", port=2000, app=app)
