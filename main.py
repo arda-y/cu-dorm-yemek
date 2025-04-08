@@ -1,6 +1,8 @@
 import pandas as pd
 import jsonpickle
 import datetime
+from fastapi.responses import HTMLResponse, JSONResponse
+import json
 
 
 def to_calendar(dosya: str) -> dict:
@@ -107,12 +109,52 @@ calendar_sabah = to_calendar("sabah.xlsx")
 calendar_aksam = to_calendar("aksam.xlsx")
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 app = FastAPI()
 
 
 @app.get("/")
+async def get_menu(request: Request):
+    today = datetime.datetime.now().strftime("%d.%m")
+    obj = {
+        "gun": today,
+        "sabah": calendar_sabah[today],
+        "aksam": calendar_aksam[today],
+    }
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept:
+        pretty_json = json.dumps(obj, ensure_ascii=False, indent=2)
+        html_content = f"""
+        <!DOCTYPE html>
+        <html lang="tr">
+        <head>
+            <meta charset="UTF-8">
+            <title>Günün Menüsü</title>
+            <style>
+                body {{
+                    font-family: monospace;
+                    background: #f9f9f9;
+                    padding: 20px;
+                }}
+                pre {{
+                    background: #fff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    white-space: pre-wrap;
+                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                }}
+            </style>
+        </head>
+        <body>
+            <pre>{pretty_json}</pre>
+        </body>
+        </html>
+        """
+        return HTMLResponse(content=html_content)
+    return JSONResponse(content=obj)
+
+
 @app.get("/bugun")
 def read_today():
     today = datetime.datetime.now().strftime("%d.%m")
