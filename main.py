@@ -116,7 +116,7 @@ app = FastAPI()
 
 @app.get("/")
 async def get_menu(request: Request):
-    today = datetime.datetime.now().strftime("%d.%m")
+    today = (datetime.datetime.now() + datetime.timedelta(hours=3)).strftime("%d.%m")
     obj = {
         "gun": today,
         "sabah": calendar_sabah[today],
@@ -157,7 +157,7 @@ async def get_menu(request: Request):
 
 @app.get("/bugun")
 def read_today():
-    today = datetime.datetime.now().strftime("%d.%m")
+    today = (datetime.datetime.now() + datetime.timedelta(hours=3)).strftime("%d.%m")
     return {"sabah": calendar_sabah[today], "aksam": calendar_aksam[today]}
 
 
@@ -169,25 +169,31 @@ def read_tomorrow():
 
 @app.get("/bugun/sabah")
 def read_today_sabah():
-    today = datetime.datetime.now().strftime("%d.%m")
+    today = (datetime.datetime.now() + datetime.timedelta(hours=3)).strftime("%d.%m")
     return {"sabah": calendar_sabah[today]}
 
 
 @app.get("/bugun/aksam")
 def read_today_aksam():
-    today = datetime.datetime.now().strftime("%d.%m")
+    today = (datetime.datetime.now() + datetime.timedelta(hours=3)).strftime("%d.%m")
     return {"aksam": calendar_aksam[today]}
 
 
 @app.get("/yarin/sabah")
 def read_tomorrow_sabah():
-    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d.%m")
+    tomorrow = (
+        datetime.datetime.now()
+        + datetime.timedelta(hours=3, days=1)
+    ).strftime("%d.%m")
     return {"sabah": calendar_sabah[tomorrow]}
 
 
 @app.get("/yarin/aksam")
 def read_tomorrow_aksam():
-    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d.%m")
+    tomorrow = (
+        datetime.datetime.now()
+        + datetime.timedelta(hours=3, days=1)
+    ).strftime("%d.%m")
     return {"aksam": calendar_aksam[tomorrow]}
 
 
