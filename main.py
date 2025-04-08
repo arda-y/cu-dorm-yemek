@@ -151,7 +151,7 @@ async def get_menu(request: Request):
         </body>
         </html>
         """
-        return HTMLResponse(content=html_content)
+        return HTMLResponse(content=html_content, media_type="text/html")
     return JSONResponse(content=obj)
 
 
