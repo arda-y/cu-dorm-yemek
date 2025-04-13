@@ -114,17 +114,22 @@ from fastapi import FastAPI, Request
 app = FastAPI()
 
 
-@app.get("/")
-async def get_menu(request: Request):
-    today = (datetime.datetime.now() + datetime.timedelta(hours=3)).strftime("%d.%m")
-    obj = {
-        "gun": today,
-        "sabah": calendar_sabah[today],
-        "aksam": calendar_aksam[today],
-    }
-    accept = request.headers.get("accept", "")
-    if "text/html" in accept:
+def construct_response(
+    obj: dict, accept_status: bool, path: str
+) -> JSONResponse | HTMLResponse:
+    if not accept_status:
         pretty_json = json.dumps(obj, ensure_ascii=False, indent=2)
+
+        links = ""
+        if path != "/yarin":
+            links += '<a href="https://yemekhane.vercel.app/yarin">Yarının listesi için tıkla gülüm</a><br>'
+        if path != "/bugun":
+            links += '<a href="https://yemekhane.vercel.app/bugun">Bugünün listesi için tıkla gülüm</a><br>'
+        links += "<br><br><br><br>"
+        links += (
+            '<a href="https://yemekhane.vercel.app/docs">API dökümantasyonu(Geliştiriciler için)</a><br>'
+        )
+
         html_content = f"""
         <!DOCTYPE html>
         <html lang="tr">
@@ -132,22 +137,23 @@ async def get_menu(request: Request):
             <meta charset="UTF-8">
             <title>Günün Menüsü</title>
             <style>
-                body {{
-                    font-family: monospace;
-                    background: #f9f9f9;
-                    padding: 20px;
-                }}
-                pre {{
-                    background: #fff;
-                    padding: 20px;
-                    border-radius: 8px;
-                    white-space: pre-wrap;
-                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-                }}
+            body {{
+                font-family: monospace;
+                background: #f9f9f9;
+                padding: 20px;
+            }}
+            pre {{
+                background: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                white-space: pre-wrap;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            }}
             </style>
         </head>
         <body>
             <pre>{pretty_json}</pre>
+            {links}
         </body>
         </html>
         """
@@ -155,57 +161,135 @@ async def get_menu(request: Request):
     return JSONResponse(content=obj)
 
 
+@app.get("/")
 @app.get("/bugun")
-def read_today():
+async def get_menu(request: Request):
     today = (datetime.datetime.now() + datetime.timedelta(hours=3)).strftime("%d.%m")
-    return {"sabah": calendar_sabah[today], "aksam": calendar_aksam[today]}
+    current_path = request.url.path
+    try:
+        obj = {
+            "gun": today,
+            "sabah": calendar_sabah[today],
+            "aksam": calendar_aksam[today],
+        }
+    except KeyError:
+        obj = {
+            "gun": today,
+            "sabah": "Yemek bulunamadı",
+            "aksam": "Yemek bulunamadı",
+        }
+    accept_status = request.headers.get("accept") == "text/html"
+    return construct_response(obj, accept_status, current_path)
 
 
 @app.get("/yarin")
-def read_tomorrow():
+def read_tomorrow(request: Request):
     tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d.%m")
-    return {"sabah": calendar_sabah[tomorrow], "aksam": calendar_aksam[tomorrow]}
+    current_path = request.url.path
+    try:
+        obj = {
+            "gun": tomorrow,
+            "sabah": calendar_sabah[tomorrow],
+            "aksam": calendar_aksam[tomorrow],
+        }
+    except KeyError:
+        obj = {
+            "gun": tomorrow,
+            "sabah": "Yemek bulunamadı",
+            "aksam": "Yemek bulunamadı",
+        }
+    accept_status = request.headers.get("accept") == "text/html"
+    return construct_response(obj, accept_status, current_path)
 
 
 @app.get("/bugun/sabah")
-def read_today_sabah():
+def read_today_sabah(request: Request):
     today = (datetime.datetime.now() + datetime.timedelta(hours=3)).strftime("%d.%m")
-    return {"sabah": calendar_sabah[today]}
+    try:
+        obj = {
+            "gun": today,
+            "sabah": calendar_sabah[today],
+        }
+    except KeyError:
+        obj = {
+            "gun": today,
+            "sabah": "Yemek bulunamadı",
+        }
+    accept_status = request.headers.get("accept") == "text/html"
+    return construct_response(obj, accept_status)
 
 
 @app.get("/bugun/aksam")
-def read_today_aksam():
+def read_today_aksam(request: Request):
     today = (datetime.datetime.now() + datetime.timedelta(hours=3)).strftime("%d.%m")
-    return {"aksam": calendar_aksam[today]}
+    try:
+        obj = {
+            "gun": today,
+            "aksam": calendar_aksam[today],
+        }
+    except KeyError:
+        obj = {
+            "gun": today,
+            "aksam": "Yemek bulunamadı",
+        }
+    accept_status = request.headers.get("accept") == "text/html"
+    return construct_response(obj, accept_status)
 
 
 @app.get("/yarin/sabah")
-def read_tomorrow_sabah():
-    tomorrow = (
-        datetime.datetime.now()
-        + datetime.timedelta(hours=3, days=1)
-    ).strftime("%d.%m")
-    return {"sabah": calendar_sabah[tomorrow]}
+def read_tomorrow_sabah(request: Request):
+    tomorrow = (datetime.datetime.now() + datetime.timedelta(hours=3, days=1)).strftime(
+        "%d.%m"
+    )
+    try:
+        obj = {
+            "gun": tomorrow,
+            "aksam": calendar_sabah[tomorrow],
+        }
+    except KeyError:
+        obj = {
+            "gun": tomorrow,
+            "aksam": "Yemek bulunamadı",
+        }
+    accept_status = request.headers.get("accept") == "text/html"
+    return construct_response(obj, accept_status)
 
 
 @app.get("/yarin/aksam")
-def read_tomorrow_aksam():
-    tomorrow = (
-        datetime.datetime.now()
-        + datetime.timedelta(hours=3, days=1)
-    ).strftime("%d.%m")
-    return {"aksam": calendar_aksam[tomorrow]}
+def read_tomorrow_aksam(request: Request):
+    tomorrow = (datetime.datetime.now() + datetime.timedelta(hours=3, days=1)).strftime(
+        "%d.%m"
+    )
+    try:
+        obj = {
+            "gun": tomorrow,
+            "aksam": calendar_aksam[tomorrow],
+        }
+    except KeyError:
+        obj = {
+            "gun": tomorrow,
+            "aksam": "Yemek bulunamadı",
+        }
+    accept_status = request.headers.get("accept") == "text/html"
+    return construct_response(obj, accept_status)
 
 
 @app.get("/gun/{day}")
-def read_day(day: str):
+def read_day(day: str, request: Request):
     try:
-        return {
+        obj = {
+            "gun": day,
             "sabah": calendar_sabah[day],
             "aksam": calendar_aksam[day],
         }
     except KeyError:
-        return {"error": "Day not found"}
+        obj = {
+            "gun": day,
+            "sabah": "Yemek bulunamadı",
+            "aksam": "Yemek bulunamadı",
+        }
+    accept_status = request.headers.get("accept") == "text/html"
+    return construct_response(obj, accept_status)
 
 
 if __name__ == "__main__":
