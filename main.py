@@ -123,7 +123,7 @@ def construct_response(
         links = ""
         if path != "/yarin":
             links += '<a href="https://yemekhane.vercel.app/yarin">Yarının listesi için tıkla gülüm</a><br>'
-        if path != "/bugun":
+        if path != "/bugun" and path != "/":
             links += '<a href="https://yemekhane.vercel.app/bugun">Bugünün listesi için tıkla gülüm</a><br>'
         links += "<br><br><br><br>"
         links += (
