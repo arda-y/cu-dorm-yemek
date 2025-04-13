@@ -115,7 +115,7 @@ app = FastAPI()
 
 
 def construct_response(
-    obj: dict, accept_status: bool, path: str
+    obj: dict, accept_status: bool, path: str = None
 ) -> JSONResponse | HTMLResponse:
     if not accept_status:
         pretty_json = json.dumps(obj, ensure_ascii=False, indent=2)
@@ -126,9 +126,7 @@ def construct_response(
         if path != "/bugun" and path != "/":
             links += '<a href="https://yemekhane.vercel.app/bugun">Bugünün listesi için tıkla gülüm</a><br>'
         links += "<br><br><br><br>"
-        links += (
-            '<a href="https://yemekhane.vercel.app/docs">API dökümantasyonu(Geliştiriciler için)</a><br>'
-        )
+        links += '<a href="https://yemekhane.vercel.app/docs">API dökümantasyonu(Geliştiriciler için)</a><br>'
 
         html_content = f"""
         <!DOCTYPE html>
