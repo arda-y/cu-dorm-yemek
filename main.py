@@ -3,6 +3,8 @@ import jsonpickle
 import datetime
 from fastapi.responses import HTMLResponse, JSONResponse
 import json
+import uvicorn
+from fastapi import FastAPI, Request
 
 
 def to_calendar(dosya: str) -> dict:
@@ -107,14 +109,13 @@ def to_calendar(dosya: str) -> dict:
 
     return calendar
 
+
 print("starting to read morning menu")
 calendar_sabah = to_calendar("sabah.xlsx")
 
 print("starting to read evening menu")
 calendar_aksam = to_calendar("aksam.xlsx")
 
-import uvicorn
-from fastapi import FastAPI, Request
 
 app = FastAPI()
 
