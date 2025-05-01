@@ -54,10 +54,16 @@ def to_calendar(dosya: str) -> dict:
 
     clear_days = jsonpickle.decode(jsonpickle.encode(days).replace("*", ""))
 
-    try:
-        clear_days.pop("01/01/1970")
-    except KeyError:
-        pass  # remove the key if it exists
+    keys_to_remove = []
+
+    for key in clear_days.keys():
+        if key.startswith("01.01.1"):
+            print(f"found {key}")
+            keys_to_remove.append(key)
+
+    for key in keys_to_remove:
+        print(f"removing {key}")
+        del clear_days[key]
 
     del clean_obj, obj, b, a, x, y, y1, key, obj2, days
 
@@ -91,21 +97,20 @@ def to_calendar(dosya: str) -> dict:
         "12": 31,
     }
 
-    for key in calendar.keys():
-        a = days_in_a_month[key[3:]]
-        b = len(calendar.keys())
+    a = days_in_a_month[key[3:5]]
+    b = len(calendar.keys())
 
-        if a == b:
-            print("all days validated")
-        else:
-            print("not all days validated")
-
-        break
+    if a == b:
+        print("all days validated")
+    else:
+        print("not all days validated")
 
     return calendar
 
-
+print("starting to read morning menu")
 calendar_sabah = to_calendar("sabah.xlsx")
+
+print("starting to read evening menu")
 calendar_aksam = to_calendar("aksam.xlsx")
 
 import uvicorn
