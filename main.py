@@ -126,7 +126,7 @@ def construct_response(
     if not accept_status:
         pretty_json = json.dumps(obj, ensure_ascii=False, indent=2)
 
-        links = "mEyLeR sİgArA wE WoZoL iHtİyAcInIz iCiN uLaSiN mQQQQ<br>"
+        links = "reklam alinir"
         if path != "/yarin":
             links += '<a href="https://yemekhane.vercel.app/yarin">Yarının listesi için tıkla gülüm</a><br>'
         if path != "/bugun" and path != "/":
