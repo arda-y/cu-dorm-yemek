@@ -139,28 +139,103 @@ def construct_response(
         <html lang="tr">
         <head>
             <meta charset="UTF-8">
-            <title>Günün Menüsü</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Yemekhane Menüsü</title>
             <style>
-            body {{
-                font-family: monospace;
-                background: #f9f9f9;
-                padding: 20px;
-            }}
-            pre {{
-                background: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                white-space: pre-wrap;
-                box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            }}
+                * {{
+                    box-sizing: border-box;
+                    margin: 0;
+                    padding: 0;
+                }}
+                body {{
+                    font-family: "Segoe UI", sans-serif;
+                    background-color: #f2f2f2;
+                    padding: 20px;
+                    color: #333;
+                }}
+                .card {{
+                    background-color: white;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                    padding: 20px;
+                    max-width: 600px;
+                    margin: 20px auto;
+                }}
+                h1 {{
+                    text-align: center;
+                    font-size: 24px;
+                    margin-bottom: 20px;
+                }}
+                .meal {{
+                    margin-bottom: 20px;
+                }}
+                .meal h2 {{
+                    font-size: 18px;
+                    color: #555;
+                    margin-bottom: 10px;
+                }}
+                .meal ul {{
+                    list-style-type: disc;
+                    padding-left: 20px;
+                }}
+                .meal ul li {{
+                    margin-bottom: 6px;
+                }}
+                .links {{
+                    margin-top: 20px;
+                    text-align: center;
+                    font-size: 14px;
+                }}
+                .links a {{
+                    color: #007bff;
+                    text-decoration: none;
+                    display: inline-block;
+                    margin: 4px;
+                }}
+                .links a:hover {{
+                    text-decoration: underline;
+                }}
+
+                @media (max-width: 600px) {{
+                    .card {{
+                        padding: 15px;
+                        margin: 10px;
+                    }}
+                    h1 {{
+                        font-size: 20px;
+                    }}
+                    .meal h2 {{
+                        font-size: 16px;
+                    }}
+                }}
             </style>
         </head>
         <body>
-            <pre>{pretty_json}</pre>
-            {links}
+            <div class="card">
+                <h1>{obj['gun']} Menüsü</h1>
+
+                <div class="meal">
+                    <h2>🥐 Sabah</h2>
+                    <ul>
+                        {''.join(f"<li>{item}</li>" for item in obj['sabah']) if isinstance(obj['sabah'], list) else f"<li>{obj['sabah']}</li>"}
+                    </ul>
+                </div>
+
+                <div class="meal">
+                    <h2>🍽️ Akşam</h2>
+                    <ul>
+                        {''.join(f"<li>{item}</li>" for item in obj['aksam']) if isinstance(obj['aksam'], list) else f"<li>{obj['aksam']}</li>"}
+                    </ul>
+                </div>
+
+                <div class="links">
+                    {links}
+                </div>
+            </div>
         </body>
         </html>
         """
+
         return HTMLResponse(content=html_content, media_type="text/html")
     return JSONResponse(content=obj)
 
@@ -188,7 +263,7 @@ async def get_menu(request: Request):
 
 @app.get("/yarin")
 def read_tomorrow(request: Request):
-    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d.%m")
+    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1, hours=3)).strftime("%d.%m")
     current_path = request.url.path
     try:
         obj = {
