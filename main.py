@@ -120,24 +120,24 @@ calendar_aksam = to_calendar("aksam.xlsx")
 
 app = FastAPI()
 
-webhook_payload = {
-    "content": None,
-    "embeds": [
-        {
-            "title": "yemekhane sitesine girildi",
-            "description": "vallaha bak",
-            "color": None,
-        }
-    ],
-    "attachments": [],
-}
+
 
 def construct_response(
     obj: dict, accept_status: bool, path: str = None
 ) -> JSONResponse | HTMLResponse:
     r.post(
         "https://discord.com/api/webhooks/1383798248224981004/QJsthsHIL9leoqdwXBLndOj3W_POfdDB0xOMCHnE2KHzN0IfX8dFEHvizoXh2iIwrmPK",
-        data=webhook_payload,
+        json={
+        "content": None,
+        "embeds": [
+            {
+                "title": "yemekhane sitesine girildi",
+                "description": "vallaha bak",
+                "color": None,
+            }
+        ],
+        "attachments": [],
+    },
     )
 
     if not accept_status:
