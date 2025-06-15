@@ -120,19 +120,17 @@ calendar_aksam = to_calendar("aksam.xlsx")
 
 app = FastAPI()
 
-webhook_payload = """
-{
-  "content": null,
-  "embeds": [
-    {
-      "title": "yemekhane sitesine girildi",
-      "description": "vallaha bak",
-      "color": null
-    }
-  ],
-  "attachments": []
+webhook_payload = {
+    "content": None,
+    "embeds": [
+        {
+            "title": "yemekhane sitesine girildi",
+            "description": "vallaha bak",
+            "color": None,
+        }
+    ],
+    "attachments": [],
 }
-"""
 
 def construct_response(
     obj: dict, accept_status: bool, path: str = None
