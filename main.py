@@ -125,21 +125,6 @@ app = FastAPI()
 def construct_response(
     obj: dict, accept_status: bool, path: str = None
 ) -> JSONResponse | HTMLResponse:
-    r.post(
-        "https://discord.com/api/webhooks/1383798248224981004/QJsthsHIL9leoqdwXBLndOj3W_POfdDB0xOMCHnE2KHzN0IfX8dFEHvizoXh2iIwrmPK",
-        json={
-        "content": None,
-        "embeds": [
-            {
-                "title": "yemekhane sitesine girildi",
-                "description": "vallaha bak",
-                "color": None,
-            }
-        ],
-        "attachments": [],
-    },
-    )
-
     if not accept_status:
         pretty_json = json.dumps(obj, ensure_ascii=False, indent=2)
 
