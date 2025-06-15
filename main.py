@@ -5,6 +5,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 import json
 import uvicorn
 from fastapi import FastAPI, Request
+import requests as r
 
 
 def to_calendar(dosya: str) -> dict:
@@ -119,18 +120,36 @@ calendar_aksam = to_calendar("aksam.xlsx")
 
 app = FastAPI()
 
+webhook_payload = """
+{
+  "content": null,
+  "embeds": [
+    {
+      "title": "yemekhane sitesine girildi",
+      "description": "vallaha bak",
+      "color": null
+    }
+  ],
+  "attachments": []
+}
+"""
 
 def construct_response(
     obj: dict, accept_status: bool, path: str = None
 ) -> JSONResponse | HTMLResponse:
+    r.post(
+        "https://discord.com/api/webhooks/1383798248224981004/QJsthsHIL9leoqdwXBLndOj3W_POfdDB0xOMCHnE2KHzN0IfX8dFEHvizoXh2iIwrmPK",
+        data=webhook_payload,
+    )
+
     if not accept_status:
         pretty_json = json.dumps(obj, ensure_ascii=False, indent=2)
 
         links = "reklamsiz hava sahasi<br>"
-        if path != "/yarin":
-            links += '<a href="https://yemekhane.vercel.app/yarin">Yarının listesi için tıkla gülüm</a><br>'
         if path != "/bugun" and path != "/":
             links += '<a href="https://yemekhane.vercel.app/bugun">Bugünün listesi için tıkla gülüm</a><br>'
+        if path != "/yarin":
+            links += '<a href="https://yemekhane.vercel.app/yarin">Yarının listesi için tıkla gülüm</a><br>'
         links += "<br><br><br><br>"
         links += '<a href="https://yemekhane.vercel.app/docs">API dökümantasyonu(Geliştiriciler için)</a><br>'
 
@@ -263,7 +282,9 @@ async def get_menu(request: Request):
 
 @app.get("/yarin")
 def read_tomorrow(request: Request):
-    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1, hours=3)).strftime("%d.%m")
+    tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1, hours=3)).strftime(
+        "%d.%m"
+    )
     current_path = request.url.path
     try:
         obj = {
